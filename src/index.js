@@ -8,7 +8,23 @@ dotenv.config({
 })
 
 
-connectDB();
+connectDB()
+.then(()=>{
+    app.on("error",(error)=>{
+        console.log("Error: ", error);
+        throw error;
+    })
+    app.listen(process.env.PORT|| 8000 ,()=>{
+        console.log(`App is listening on port ${process.env.PORT}`);
+    })
+})
+.catch((error)=>{
+    console.error(`MongoDB connection error: `, error);
+    process.exit(1);
+})
+
+
+
 //MongoDB connection error:  MongoServerError: bad auth : authentication failed
 // why? because we are not passing the username and password to the connection string
 // how to resolve this? we canresolve this by
