@@ -16,7 +16,7 @@ const userSchema = new Schema({
         trim:true,
         index:true //searching optimum banana hai tho index true kardo
     },
-    avtar:{
+    avatar:{
         type:String, //cloudinary url
         required:true,
     },
@@ -47,7 +47,7 @@ const userSchema = new Schema({
 //init(note:init hooks are synchronous) 
 userSchema.pre("save",async function (next) {
     if(!this.isModified("password")) return next() //agar password change nahi hua tho next
-     this.password = brcypt.hash(this.password,10)
+     this.password = await bcrypt.hash(this.password,10)
      next()
 } )
 //pre is hook of middleware

@@ -1,28 +1,22 @@
-//require("dotenv").config(path: "./.env");
 import dotenv from "dotenv";
- 
-import connectDB from "./db/index.js";
+// import mongoose from "mongoose";
+import { DB_NAME } from "./constants.js"
+import connectDB from "./db/index.js"
+import {app} from './app.js'
 
 dotenv.config({
-    path: "./.env"
-})
-
+    path:'./env'
+});
 
 connectDB()
 .then(()=>{
-    app.on("error",(error)=>{
-        console.log("Error: ", error);
-        throw error;
-    })
-    app.listen(process.env.PORT|| 8000 ,()=>{
-        console.log(`App is listening on port ${process.env.PORT}`);
+    app.listen(process.env.PORT ||3001, () =>{
+        console.log(`Server is running at ${process.env.PORT}`);
     })
 })
-.catch((error)=>{
-    console.error(`MongoDB connection error: `, error);
-    process.exit(1);
+.catch((err)=>{
+    console.log("MongoDB connection failed !!!",err);
 })
-
 
 
 //MongoDB connection error:  MongoServerError: bad auth : authentication failed
