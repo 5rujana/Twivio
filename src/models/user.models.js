@@ -16,6 +16,14 @@ const userSchema = new Schema({
         trim:true,
         index:true //searching optimum banana hai tho index true kardo
     },
+    email:{
+        type:String,
+        required:true,
+        unique:true,
+        lowercase:true,
+        trim:true,
+        index:true //searching optimum banana hai tho index true kardo
+    },
     avatar:{
         type:String, //cloudinary url
         required:true,
