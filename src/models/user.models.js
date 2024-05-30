@@ -64,7 +64,7 @@ userSchema.pre("save",async function (next) {
 userSchema.methods.isPasswordMatch = async function (password) {
     return await bcrypt.compare(password,this.password)
 } 
-export const User = mongoose.model("User", userSchema)
+
 
 userSchema.methods.generateAccessToken = function () {
     //sign method is used to generate token
@@ -98,3 +98,5 @@ userSchema.methods.generateRefreshToken = function () {
             }
     )
 } 
+
+export const User = mongoose.model("User", userSchema)
