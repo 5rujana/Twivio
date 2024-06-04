@@ -47,7 +47,7 @@ const registerUser = asyncHandler(async (req,res) =>{
     if(existingUser){
         throw new ApiError(409,"User already exists")
     }
-    console.log(req.files)
+    console.log(req.files) //requested files ig
     //check of images,check for avtar
     const avatarLocalPath = req.files?.avatar[0]?.path
    // const coverImageLocalPath = req.files?.coverImage[0]?.path
