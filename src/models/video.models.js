@@ -32,9 +32,9 @@ const videoSchema = new Schema(
             default:true
         },
 
-        ownwe:{
-            ype:Schema.Types.ObjectId,
-            ref:"Usenpm r"
+        owner:{
+            type:Schema.Types.ObjectId,
+            ref:"User"
         }
         
     },{ timestamps: true }
