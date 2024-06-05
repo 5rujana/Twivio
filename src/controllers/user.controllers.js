@@ -341,4 +341,4 @@ export {registerUser,
         updateAccountDetails,
         updateUserAvatar,
         updateUserCoverImage
-} 
+}
