@@ -28,7 +28,7 @@ const generateAccessAndRefreshTokens = async (userId) => {
             throw new ApiError(500, "An error occurred while generating refresh and access tokens");
         }
     }
-};
+}; 
 
 const registerUser = asyncHandler(async (req,res) =>{
     // get user details from user (from fronted)
@@ -298,6 +298,9 @@ const updateUserAvatar = asyncHandler(async(req,res)=>{
         },
     {new:true}).select("-password -refreshToken")
 
+    //create a utility function to delete the old avatar from cloudinary
+
+
     return res
     .status(200)
     .json(new ApiResponse(200,{},"Avatar updated successfully"))
@@ -324,14 +327,82 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
             }
         },
     {new:true}).select("-password -refreshToken")
-
+    //create a utility function to delete the old coverImage from cloudinary
     return res
     .satatus(200)
     .json(new ApiResponse(200,{},"Cover Image updated successfully"))
     
 })
 
-export {registerUser, 
+const getUserChannelProfile = asyncHandler(async(req,res)=>{
+    const {username} = req.params //we are getting username from the url
+    if(!username?.trim()){
+        throw new ApiError(404,"Username is missing")
+    }
+
+    const channel = await User.aggregate([ //output of aggregate is an array
+        {
+            $match:{
+                username:username.toLowerCase()
+            }
+        },
+        {
+            $lookup:{
+                from:"Subscriptions",
+                localField:"_id",
+                foreignField:"channel",
+                as:"subscribers"
+            }
+        },
+
+        {
+            $lookup:{
+                from:"Subscriptions",
+                localField:"_id",
+                foreignField:"subscriber",
+                as:"subscribedTo"
+            
+            }
+        },
+        {
+            $addFields:{
+                totalSubscribers:{$size:"$subscribers"},
+                totalSubscriptions:{$size:"$subscribedTo"},
+                isUserSubscribed:{
+                    $cond:{
+                        if:{ $in:[req.user?._id,"$subscribers.subscriber"]}, // in operator checks in array as well as in object
+                        then:true,
+                        else:false
+                    }}
+            
+            }
+        },
+
+        {
+            $project:{
+                fullname:1,
+                username:1,
+                avatar:1,
+                coverImage:1,
+                totalSubscribers:1,
+                totalSubscriptions:1,
+                isUserSubscribed:1
+            }
+        }
+     ])
+
+     console.log(channel)
+    if(!channel?.length){
+        throw new ApiError(404,"Channel not found")
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponse(200,channel[0],"Channel profile fetched successfully"))
+    
+}) 
+
+export {registerUser,  
         loginUser,
         logoutUser,
         refreshAccessToken,
@@ -340,5 +411,6 @@ export {registerUser,
         getCurrentUser,
         updateAccountDetails,
         updateUserAvatar,
-        updateUserCoverImage
+        updateUserCoverImage,
+        getUserChannelProfile
 }
