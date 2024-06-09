@@ -142,7 +142,11 @@ const deleteVideo = asyncHandler(async (req, res) => {
         throw new ApiError(404,"Video not found")
     }
 
-    await Video.findByIdAndDelete(videoId) 
+    await Video.findByIdAndDelete(videoId)
+    
+    res
+    .status(200)
+    .json(new ApiResponse(200,{},"Video is deleted successfully"))  
 
 })
 
