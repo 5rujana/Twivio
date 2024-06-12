@@ -173,9 +173,11 @@ const togglePublishStatus = asyncHandler(async (req, res) => {
         {new:true}
     )
 
+    publishedflag? false:true
+
     res
     .status(200)
-    .json(new ApiResponse(200,{},"Video publish status is toggled successfully"))
+    .json(new ApiResponse(200,{publishedflag},"Video publish status is toggled successfully"))
 })
 
 export {
