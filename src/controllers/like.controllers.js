@@ -97,7 +97,7 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 const getLikedVideos = asyncHandler(async (req, res) => {
     //TODO: get all liked videos
     
-    const likedvideos = await Like.find({user:req.user._id,video:{$exists:true}}).populate('video');
+    const likedvideos = await Like.find({likedBy:req.user._id,video:{$exists:true}}).populate('video');
     res
     .status(200)
     .json(new ApiResponse(200,{likedvideos},"Liked videos are fetched successfully"))
@@ -106,7 +106,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
 
 const getLikedTweets = asyncHandler(async (req, res) => {
     //TODO: get all liked tweets
-    const likedtweets = await Like.find({user:req.user._id,tweet:{$exists:true}})
+    const likedtweets = await Like.find({likedBy:req.user._id,tweet:{$exists:true}})
     res
     .status(200)
     .json(new ApiResponse(200,{likedtweets},"Liked tweets are fetched successfully"))
