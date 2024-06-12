@@ -22,12 +22,13 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     else{
         await Subscription.create({channel:channelId,subscriber:req.user._id})
     }
+    const subscriber = await User.findById(req.user._id)
     const isSubscribed = existingSubscription ? false : true
     const totalSubscribers = await Subscription.countDocuments({channel:channelId})
 
     res
     .status(200)
-    .json(new ApiResponse(200,{totalSubscribers,isSubscribed},"Subscription is toggled successfully"))
+    .json(new ApiResponse(200,{totalSubscribers,isSubscribed,subscriber},"Subscription is toggled successfully"))
 })
 
 // controller to return subscriber list of a channel
