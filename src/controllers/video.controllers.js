@@ -41,8 +41,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
     if([title,description].some((field)=>field.trim()==="")){
         throw new ApiError(400,"All fields are required")
     }
-    const videoLocalPath = req.files?.videoFile[0]
-    const thumbnailLocalPath = req.files?.thumbnail[0]
+    const videoLocalPath = req.files?.videoFile[0].path
+    const thumbnailLocalPath = req.files?.thumbnail[0].path
     if(!videoLocalPath &&  !thumbnailLocalPath){
         throw new ApiError(400,"All fields are required")
     }
@@ -52,7 +52,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
     }
 
     const thumbnail = await UploadOnCloudinary(thumbnailLocalPath)  
-    if(!thumbnail){
+    if(!thumbnail){1            
         throw new ApiError(500,"There was an error uploading thumbnail")
     }
 
@@ -97,7 +97,7 @@ const updateVideo = asyncHandler(async (req, res) => {
         throw new ApiError(404,"Video not found")
     }
 
-    const thumbnailLocalPath = req.file?.thumbnail
+    const thumbnailLocalPath = req.files?.thumbnail[0].path
     if(!thumbnailLocalPath){
         throw new ApiError(400,"Thumbnail is required")
     }
