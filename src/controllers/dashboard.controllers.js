@@ -12,10 +12,10 @@ const getChannelStats = asyncHandler(async (req, res) => {
     if(!mongoose.isValidObjectId(channelId)){
         throw new ApiError(400,"Invalid channel id")
     }
-    const totalVideos = await Video.countDocuments({channel:channelId})
+    const totalVideos = await Video.countDocuments({owner:channelId})
     const totalSubscribers = await Subscription.countDocuments({channel:channelId})
-    const totalLikes = await Like.countDocuments({channel:channelId})
-    const totalViews = await Video.aggregate([
+    const totalLikes = await Like.countDocuments({likedBy:channelId}) //work on this
+    const totalViews = await Video.aggregate([ //work on this
         {
             $match:{channel:channelId}
         },
