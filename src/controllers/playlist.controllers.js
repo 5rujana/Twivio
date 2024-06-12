@@ -4,16 +4,14 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 const createPlaylist = asyncHandler(async (req, res) => {
-    const {name, description} = req.body
-
+    const {title, description} = req.body
     //TODO: create playlist
-    if([name,description.some((field)=>field.trim==="")]){
+    if([title,description].some((field)=>field.trim==="")){
         throw new ApiError(400,"All fields are required i.e name and description")
     }
 
     const playlist = await Playlist.create({
-        name,
-        //what about videos?
+        title,
         description,
         owner:req.user._id
     })
@@ -125,8 +123,12 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 
 const updatePlaylist = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
-    const {name, description} = req.body
+    const {title, description} = req.body
     //TODO: update playlist
+    if([title,description].some((field)=>field.trim==="")){
+        throw new ApiError(400,"All fields are required i.e name and description")
+    }
+
     if(!isValidObjectId(playlistId)){
         throw new ApiError(400,"Invalid playlist id")
     }
@@ -134,7 +136,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
     const playlist = await Playlist.findByIdAndUpdate(playlistId,
         {
             $set:{
-                name,
+                title,
                 description
             }
         },
