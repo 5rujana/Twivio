@@ -23,6 +23,7 @@ const createTweet = asyncHandler(async (req, res) => {
     const tweet = await Tweet.create({
         content,
         owner:req.user._id
+
     })
 
     res
@@ -32,11 +33,11 @@ const createTweet = asyncHandler(async (req, res) => {
 
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweet
-    const {username} = req.params
-    if([username].some((field)=>field.trim()==="")){
-        throw new ApiError("Username is empty")
+    const {userId} = req.params
+    if(!isValidObjectId(userId)){
+        throw new ApiError(400,"Invalid user id")
     }
-    const tweets = await Tweet.find({owner:username}) //idhar already hamara owner field hai Tweet model me
+    const tweets = await Tweet.find({owner:userId}) //idhar already hamara owner field hai Tweet model me
     res
     .status(200)
     .json(new ApiResponse(200,{tweets},"Tweets are fetched successfully"))
@@ -56,7 +57,9 @@ const updateTweet = asyncHandler(async (req, res) => {
         throw new ApiError(400,"Invalid tweet id")
     }
 
-    const tweet = await Tweet.findByIdAndUpdate(tweetId,
+    const {content} = req.body
+
+    await Tweet.findByIdAndUpdate(tweetId,
         {
             $set:{
                 content
@@ -69,7 +72,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 
     res
     .status(200)
-    .json(ApiResponse(200,{},"Tweet updated successfully"))
+    .json( new ApiResponse(200,{},"Tweet updated successfully"))
 
 })
 
@@ -83,7 +86,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
         throw new ApiError(400,"Invalid tweet id")
     }
 
-    const tweet =await Tweet.findByIdAndDelete(tweetId)
+    await Tweet.findByIdAndDelete(tweetId)
     res
     .status(200)
     .json(new ApiResponse(200,{},"Tweet deleted successfully"))
