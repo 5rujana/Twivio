@@ -32,17 +32,17 @@ const getVideoComments = asyncHandler(async (req, res) => {
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
     const {videoId} = req.params
-    const {text} = req.body
+    const {content} = req.body
     if(!isValidObjectId(videoId)){
         throw new ApiError(400,"Invalid video id")
     }
-    if(!text.trim()){
+    if(!content.trim()){
         throw new ApiError(400,"Comment text is required")
     }
     const comment = await Comment.create({
-        content:text,
+        content,
         video:videoId,
-        user:req.user._id
+        owner:req.user._id
     })
 
     res
@@ -58,14 +58,14 @@ const updateComment = asyncHandler(async (req, res) => {
         throw new ApiError(400,"Invalid comment id")
     }
 
-    const {text} = req.body
-    if(!text.trim()){
+    const {content} = req.body
+    if(!content.trim()){
         throw new ApiError(400,"Comment text is required")
     }
     const comment = await Comment.findByIdAndUpdate(
         commentId,
         {
-            content:text
+            content
         },
         {new:true}
     
