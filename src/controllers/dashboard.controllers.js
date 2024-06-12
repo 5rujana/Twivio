@@ -18,7 +18,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
         [
             {
                 $match: {
-                    owner: new mongoose.Types.ObjectId(req.user?._id)
+                    owner: new mongoose.Types.ObjectId(channelId)
                 }
             },
             {
@@ -61,7 +61,7 @@ const getChannelStats = asyncHandler(async (req, res) => {
             },
             {
                 $match: {
-                    "allVideos.owner": new mongoose.Types.ObjectId(req.user?._id)
+                    "allVideos.owner": new mongoose.Types.ObjectId(channelId)
                 }
             },
             {
@@ -83,10 +83,15 @@ const getChannelStats = asyncHandler(async (req, res) => {
 
     const totalVideosLikes = totalLikes[0]  
 
-    
+    const channelStats = [
+        { totalSubscribers: totalSubscribers },
+        { totalVideos: totalVideos },
+        totalVideosViews,
+        totalVideosLikes
+    ]
     res
     .status(200)
-    .json(new ApiResponse(200,{totalVideos,totalSubscribers,totalVideosLikes,totalVideosViews},"Channel stats are fetched successfully"))
+    .json(new ApiResponse(200,{channelStats},"Channel stats are fetched successfully"))
 })
 
 const getChannelVideos = asyncHandler(async (req, res) => {
