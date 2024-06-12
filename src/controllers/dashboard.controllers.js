@@ -14,22 +14,79 @@ const getChannelStats = asyncHandler(async (req, res) => {
     }
     const totalVideos = await Video.countDocuments({owner:channelId})
     const totalSubscribers = await Subscription.countDocuments({channel:channelId})
-    const totalLikes = await Like.countDocuments({likedBy:channelId}) //work on this
-    const totalViews = await Video.aggregate([ //work on this
-        {
-            $match:{channel:channelId}
-        },
-        {
-            $group:{ 
-                _id:null,
-                totalViews:{$sum:"$views"}
+    const totalViews = await Video.aggregate(
+        [
+            {
+                $match: {
+                    owner: new mongoose.Types.ObjectId(req.user?._id)
+                }
+            },
+            {
+                $match: {
+                    views: {
+                        $gt: 0
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: "$views",
+                    totalViews: {
+                        $sum: "$views"
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalViews: 1
+                }
             }
-        }
-    ])
+        ]
+    )
+    const totalVideosViews = totalViews[0]
 
+    const totalLikes = await Like.aggregate(
+        [
+            {
+                $lookup: {
+                    from: "videos",
+                    localField: "video",
+                    foreignField: "_id",
+                    as: "allVideos",
+                }
+            },
+            {
+                $unwind: "$allVideos" 
+            },
+            {
+                $match: {
+                    "allVideos.owner": new mongoose.Types.ObjectId(req.user?._id)
+                }
+            },
+            {
+                $group: {
+                    _id: null,  
+                    totalVideosLikes: {
+                        $sum: 1 
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalVideosLikes: 1
+                }
+            },   
+        ]
+    )
+
+    const totalVideosLikes = totalLikes[0]  
+
+    
     res
     .status(200)
-    .json(new ApiResponse(200,{totalVideos,totalSubscribers,totalLikes,totalViews},"Channel stats are fetched successfully"))
+    .json(new ApiResponse(200,{totalVideos,totalSubscribers,totalVideosLikes,totalVideosViews},"Channel stats are fetched successfully"))
 })
 
 const getChannelVideos = asyncHandler(async (req, res) => {
